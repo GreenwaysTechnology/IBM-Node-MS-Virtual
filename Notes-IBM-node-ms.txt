@@ -1,0 +1,1105 @@
+ES 6 
+•	Es 6 Overview
+•	Babel Transpilers
+•	Let ,const, block scope
+•	String template literals
+•	Arrow functions
+•	Classes
+•	inheritance
+•	Instance variables, methods
+•	Object Destructuring
+•	Async programming and implementations
+•	Call back hell
+•	Promises
+•	Async and await
+•	ES 6 modules
+
+
+
+NodeJS Introduction
+•	Node's Architecture
+•	Node's CLI and REPL
+•	Global Object, Process, and Buffer
+•	JSON and C++ Addons
+
+Concurrency Model and Event Loop
+•	The Event Loop
+•	The Call Stack
+•	Handling Slow Operations
+•	How Callbacks Actually Work
+•	setImmediate and process.nextTick
+
+Node's Event-driven Architecture
+•	Callbacks, Promises, and Async/Await
+•	Event Emitter
+•	Arguments, Errors, and Order of Listeners
+
+NodeJS Networking
+•	TCP Networking with the Net Module
+•	Working with Multiple Sockets
+•	The DNS Module
+•	UDP Datagram Sockets
+
+Node for Web
+•	The Basic Streaming HTTP Server
+•	Working with HTTPS
+•	Requesting HTTP/HTTPS Data
+•	Working with Routes
+•	Parsing URLs and Query Strings
+
+Node's Common Built-in Libraries
+•	Working with the Operating System
+
+
+
+    Working with the File System
+    Console and Utilities
+    Debugging Node.js Applications
+
+Working with Streams
+    What are Streams?
+    Implementing Readable and Writable Streams
+    Duplex Streams and Transform Streams
+
+Clusters and Child Processes
+    Scaling Node.js Applications
+    Child Processes Events and Standard IO
+    The Shell Syntax, exec(), and execFile()
+    The fork() Function
+    The Cluster Module
+    Load-balancing an HTTP Server
+    Broadcasting Messages to All Workers
+    Availability and Zero-downtime Restarts
+    Shared State and Sticky Load Balancing
+
+Micro services on Node.js using Molecular
+
+Micro Services
+	What is Micro Service?
+	Why Micro Services
+	Distributed Application Architecture
+	Domain Driven Design
+	Monolithic to Micro services
+	Advantages and Disadvantages
+
+
+Micro Services Design Patterns
+	What is Service? How to write them.
+	How to Break Application , How to break down into services
+	Services Using SRP Principle
+
+	Service Communication Pattern
+o	Remote Procedure Invocation
+o	Messaging
+o	Domain-specific protocol
+	Service Discovery Patterns
+o	Client-side discovery
+o	Server-side discovery
+o	Service registry
+o	Self registration
+o	3rd party registration
+	Data management
+o	Database per Service
+o	Shared database
+o	Saganew
+o	API Compositionnew
+o	CQRS
+o	Domain event
+	
+	Deployment patterns
+o	Multiple service instances per host
+o	Service instance per host
+o	Service instance per VM
+o	Service instance per Container
+o	Serverless deployment
+o	Service deployment platform
+
+	External API
+o	API gateway
+o	Backend for front-end
+
+	Reliability
+o	Circuit Breaker
+
+	Observability
+o	Log aggregation
+o	Application metrics
+o	Audit logging
+o	Distributed tracing
+o	Exception tracking
+o	Health check API
+
+
+What is Moleculer?
+Features
+	Promise-based solution (async/await compatible)
+	request-reply concept
+	support streams
+	support event-driven architecture with balancing
+	built-in service registry & dynamic service discovery
+	load balanced requests & events (round-robin, random, cpu-usage, latency)
+	many fault tolerance features (Circuit Breaker, Bulkhead, Retry, Timeout, Fallback)
+	supports middlewares
+	supports versioned services
+	service mixins
+	built-in caching solution (memory, Redis)
+	pluggable transporters (TCP, NATS, MQTT, Redis, NATS Streaming, Kafka)
+	pluggable serializers (JSON, Avro, MsgPack, Protocol Buffers, Thrift)
+	pluggable validator
+	multiple services on a node/server
+	all nodes are equal, no master/leader node
+	parameter validation with fastest-validator
+	built-in health monitoring & metrics
+	official API gateway module and many other modules…
+.................................................................................
+
+lab Setup:
+
+1.node
+
+>node --version
+
+2.IDE  : Vs code
+
+
+ES 6
+
+ES : Ecma script 6 
+ It is javascript version 6
+
+Javascript is the powerful pl today.
+
+ =>Object based 
+ =>functional style
+ =>Event driven 
+PL
+
+Object oriented vs Object based
+ 
+oop
+ ->Abstraction
+ ->Encaspulation
+ ->Modularity
+ ->Hierachy
+ ->Typing
+--------------------
+ ->Concurrency
+ ->Persistency
+
+Object based:
+ -language does not implement all 5 principles or implement partially.
+ language is called as "Object based"
+
+functional programming and functional style programming:
+........................................................
+
+Church principles:
+1. Pure function
+2. function as first class citizens
+3. referencial integrity
+4. recurrsion and no loops
+
+
+JS supports
+1.function as first class citizens
+2.pure function
+
+Event driven:
+............
+
+In event driven programming, how two programms can interact each other independenly without knowing each other.
+
+ Program1 ------talks------Program2
+            why talks
+   because they have to exchange data.
+
+if you are object oriented developer
+   Objects can talk each other => Object communication / Message passing
+
+ class CartService{
+
+  OrderService orderSerivce;
+
+   public CartService(OrderService orderService){
+	this.orderService = orderService;
+   }
+
+    public String placeOrder(){
+
+	 return orderService.confirmOrder();
+    }
+
+ }
+
+ class OrderService{
+ 
+    public String confirmOrder(){
+	return 'Order has been placed '
+    }
+
+ }
+
+
+OrderService orderService=new OrderService();
+//dependency injection
+CartService cartService=new CartService(orderService);
+cartService.placeOrder()
+
+Tightly coupled approach : Objects are tightly copuled for communication
+
+Loosly coupled object interaction pattern
+ 
+ -Event driven programming
+
+
+ class CartService{
+
+    public String placeOrder(){
+
+       event.subscribe('confirmOrder',data);
+	
+    }
+
+ }
+
+    subscribe : confirmOrder
+ | ------------Event Channel-------------------------|
+    published : confirmOrder
+
+ class OrderService{
+ 
+    public String confirmOrder(){
+	event.emit('confirmOrder','Order has been placed ')
+    }
+
+ }
+
+.................................................................................
+JS VERSIONS
+ es 1,es 3,es 4,5,6,7....
+
+ECMA : es
+
+JAVA SCRIPT :
+
+1.Language fundamentals
+2.Object based programming
+3.functional style programming
+4.ASYNC programming
+5.DOM programming
+
+ES 6
+what is es 6? Why ES 6 ?
+ ES 6 is js standards
+ES 6 brought new and simplified syntax for javascript development.
+
+1.Language fundamentals
+
+ - variable declarations
+  - var - es 5 
+    - let and const -new keywords in es 6
+.................................................................................
+Running code:
+
+>node  src/index.js
+
+
+variable declarations:
+.....................
+
+var  variableName=value (literals)
+
+var | let | const variable=literals
+
+Types of literals:
+string,number, boolean, undefined
+NaN,infinity
+function,object,null.
+
+string:
+/let htmlDoc = "<html>" +
+      "<head>" +
+      "<body>" +
+      "</body>" +
+      "</html>";
+
+let title = 'IBM-Digitial';
+let htmlnewDoc = `<html>
+                  <head>
+                        <title>${title}</title>
+                  </head>
+                  <body>
+                        <h1>Hello</h1>
+                  </body>
+                  </html>
+      `;
+console.log(htmlDoc)
+console.log(htmlnewDoc);
+
+
+Numbers:
+//numbers : 64 bit double
+
+let salary = 1000;
+console.log(`Salary ${salary}`);
+
+//div / 0
+let avgSalary = salary / 0;
+console.log(`Avg Salary ${avgSalary}`)
+
+//undefined is value, which is initalized if variable has no value
+
+let qty;
+console.log(qty);
+
+let price = 100;
+//NaN : Not a Number : error code
+let totalPrice = price * qty;
+console.log(`Total Price ${totalPrice}`);
+
+
+//booelans : true /false
+let isActive = true;
+console.log(`isActive ${isActive}`);
+
+//decision making
+if (isActive) {
+      console.log('Active')
+} else {
+      console.log('In Active');
+}
+isActive ? console.log('Active') : console.log('In Active')
+//booleans
+/**
+ * Truthy values:
+ *  In javascript everything is true execpt the following values
+ * 
+ * fasly values
+ *  1.boolean false
+ *  2.Empty string "" ,''
+ *  3.0
+ *  4.undefined
+ *  5.NaN
+ *  6.null
+ */
+//let firstName = 'Subramanain';
+let firstName = '';
+if (firstName) {
+      console.log(`The first Name ${firstName}`);
+} else {
+      console.log('No first Name')
+}
+
+///////////////////////////////////////////////////////////////
+
+//operators
+// == , === !=,!==,!,!!
+
+//equal operators
+
+let x = 10;
+let y = 10;
+if (x == y) {
+      console.log('X and Y are equal')
+} else {
+      console.log('X AND Y not equal')
+}
+// === type + content
+let a = "10"; //string
+let b = 10; //number
+if (a === b) { // string == number
+      console.log('A and B are equal')
+} else {
+      console.log('A AND B not equal')
+}
+
+let token = '1234';
+//let isTokenAvailable = !token; //inverter
+let isTokenAvailable = !!token; //inverter
+console.log(`isTokenAvailable ${isTokenAvailable}`)
+
+
+...................
+const : read only
+once variable is intialized , cant be changed.
+
+//const
+
+/**
+ * let vs const
+ *  both are same
+ * let can be reinitalized 
+ * const cant
+ */
+let a = 10;
+console.log(`A ${a}`);
+a = 90;
+console.log(`A ${a}`);
+
+const PI = 3.14;
+console.log(`PI ${PI}`);
+PI = 877;
+console.log(`PI ${PI}`);
+
+////////////////////////////////////////////////////////////////////////////////
+
+default Function args:
+function sayHello() {
+      console.log('Hello!');
+}
+sayHello();
+
+//function parameters and args
+//default Args
+function add(a = 1, b = 1) {
+      return a + b;
+}
+console.log(add(10, 10));
+console.log(add());
+console.log(add(undefined, 90));
+
+
+//////////////////////////////////////////////////////////////////////
+
+Function expressions
+
+//funciton declaration
+function sayHello() {
+      return 'hello';
+}
+//function invocation
+console.log(sayHello());
+
+//function declaration : literal pattern
+//hai is just variable , which points function as value
+/* let hai = function sayHai() {
+      console.log('Hai');
+}; */
+//Anonmous function
+let hai = function () {
+      console.log('Hai');
+};
+//invoke
+//sayHai();
+hai();
+
+let add = function (a=1, b=1) {
+      return a + b;
+};
+console.log(add(10, 10));
+
+///////////////////////////////////////////////////////////////////////////
+
+Function expression in es 6 : Arrow functions/ Lambdas
+
+//arrow functions
+
+/* let hai = function () {
+      console.log('Hai');
+}; */
+//arrow function : ES 6 version of function expression.
+/**
+ * Arrow function has so many flav
+ */
+
+//basic function
+let hai = () => {
+      console.log('Hai');
+};
+
+hai();
+//with args : two parameters, with default value
+let add = (a = 1, b = 1) => {
+      let result = a + b;
+      console.log(`The add result is ${result}`);
+};
+add(10, 10)
+//with args : single parameter without default value : bracket() can be dropped
+let welcome = name => {
+      console.log(`The name is ${name}`);
+};
+welcome('Subramanian');
+
+//if function body has only one line : drop {}
+let welcome1 = name => console.log(`The name is ${name}`);
+welcome1('Subramanian');
+//return values
+/* let substract = (a = 1, b = 1) => {
+      return a - b;
+}; */
+//if function has only return statement, no more body ; you can drop {}, return statement.
+let substract = (a = 1, b = 1) => a - b;
+console.log(substract(10, 2));
+////////////////////////////////////////////////////////////////////////////////
+
+Function as parameter , function as return values:
+..................................................
+
+Function as parameter  : Async Programming 
+
+
+//a =x
+//b =y
+function add(a, b) {
+      console.log(a + b);
+}
+add(10, 10);
+let x = 10;
+let y = 90;
+add(x, y);
+//function passed as parameter to another function
+//connection = dbConnection
+function connect(connection) {
+      //invoke function
+      connection();
+}
+//variable anonmous function
+let dbConnection = function () {
+      console.log('db connection');
+};
+connect(dbConnection);
+//inline anonmous 
+connect(function () {
+      console.log('NOSQL connection');
+});
+.............................
+//function passed as parameter to another function
+//connection = dbConnection
+function connect(connection) {
+      //invoke function
+      let isConnected = connection('Connection is Up!');
+      isConnected ? console.log('Connected') : console.log('Not Connected!');
+      isConnected
+}
+//variable anonmous function
+let dbConnection = function (status) {
+      console.log(status);
+      return true;
+};
+connect(dbConnection);
+//inline anonmous 
+connect(function (status) {
+      console.log(`NoSQL ${status}`);
+      return true;
+});
+///////////////////////////////////////////////////////////////////
+
+Arrow version of function as parameter
+let connect = connection => {
+      //invoke function
+      let isConnected = connection('Connection is Up!');
+      isConnected ? console.log('Connected') : console.log('Not Connected!');
+};
+//variable anonmous function
+let dbConnection = status => {
+      console.log(status);
+      return true;
+};
+connect(dbConnection);
+//inline anonmous 
+connect(status => {
+      console.log(`NoSQL ${status}`);
+      return true;
+});
+
+/////////////////////////////////////////////////////////////////
+
+Returning function from another function.
+
+scope : visibilty of variable,funciton
+
+1.global scope
+ node does not support global scope.
+2.function scope
+   any thing is declared inside function , not available
+outside function.
+3.block scope
+  with in blocks
+4.object scope
+5.module scope.
+
+
+called with in function.
+
+function increment() {
+      console.log('increment function is called!');
+      //nested function 
+      function count() {
+            console.log('counter function')
+      }
+      //
+      count();
+}
+increment();
+
+function increment() {
+      console.log('increment function is called!');
+      //nested function 
+      let count = function () {
+            console.log('counter function')
+      }; //
+      count();
+}
+increment();
+
+how to call count funciton outside increment function?
+
+
+function increment() {
+      console.log('increment function is called!');
+      //nested function 
+      /*  return function count() {
+             console.log('counter function')
+       } */
+      /*  let count = function () {
+             console.log('counter function')
+       };
+       return count; */
+      return function () {
+            console.log('counter function')
+      };
+}
+/* let counter = increment();
+counter(); */
+increment()();
+
+
+let decrement = () => {
+      return () => console.log('Decrement');
+}
+decrement()();
+
+
+//////////////////
+block scope:
+
+block : if,switch,loops...{}
+
+js and blocks
+
+js does not have block by default.
+
+
+code written by you
+function isValid(token) {
+
+      if (token) {
+            //block level variables
+            var message = 'Token is Present'
+      } else {
+            //block level variables
+            var errMessage = 'Token not Present';
+      }
+
+      console.log(message, errMessage);
+}
+
+result:
+isValid()
+  undefined,Token not Present.
+
+|
+after compilation : js alters the source code like below : hoisting: moving the code function level.
+
+function isValid(token) {
+    var message;
+    var errMessage;
+      if (token) {
+            //block level variables
+             message= 'Token is Present'
+      } else {
+            //block level variables
+             errMessage= 'Token not Present';
+      }
+
+      console.log(message, errMessage);
+}
+
+with let keyword
+source code
+function isValid(token) {
+
+      if (token) {
+            //block level variables
+            let message = 'Token is Present'
+      } else {
+            //block level variables
+            let errMessage = 'Token not Present';
+      }
+
+      console.log(message, errMessage);
+}
+compiled code
+
+function isValid(token) {
+
+      if (token) {
+            //block level variables
+            let message = 'Token is Present'
+      } else {
+            //block level variables
+            let errMessage = 'Token not Present';
+      }
+
+      console.log(message, errMessage);
+}
+////////////////////////////////////////////////////////////////////////////////
+
+Object based programming:
+
+Object : Memory layout containing data  and how data to be manpulated.
+
+In js every thing is object expect some few values: undefined.
+
+How to create Object?
+
+1.COnstructors
+  1.1.using traditional function
+  1.2.using es 6 classes
+2.Literals
+
+
+//function as Object template
+
+/* function Employee() {
+      //data + methods
+      this.id = 1;
+      this.firstName = 'Divya Sree';
+      this.lastName = 'Subramanian';
+      //methods
+      this.calculateSalary = function () {
+            return 100 * 100;
+      }
+} */
+//class
+class Employee {
+      id = 1;
+      firstName = 'Divya Sree';
+      lastName = 'Subramanian';
+      //methods
+      /* calculateSalary = function () {
+            return 100 * 100;
+      } */
+      /*  calculateSalary() {
+             return 100 * 100;
+       } */
+      calculateSalary = () => {
+            return 100 * 100;
+      }
+}
+//Object creation
+let emp = new Employee();
+console.log(`Id ${emp.id} name ${emp.firstName} ${emp.lastName} ${emp.calculateSalary()}`)
+
+
+State initalization: data
+
+1.hardcoded directly inside class
+
+class Employee {
+      //instance variables
+      id = 1;
+      firstName = 'Divya Sree';
+      lastName = 'Subramanian';
+      //methods
+      /* calculateSalary = function () {
+            return 100 * 100;
+      } */
+      /*  calculateSalary() {
+             return 100 * 100;
+       } */
+      calculateSalary = () => {
+            return 100 * 100;
+      }
+}
+
+2.after object creation 
+
+//function as Object template
+
+/* function Employee() {
+      //data + methods
+      this.id = 1;
+      this.firstName = 'Divya Sree';
+      this.lastName = 'Subramanian';
+      //methods
+      this.calculateSalary = function () {
+            return 100 * 100;
+      }
+}
+*/
+class Employee {
+      //instance variables
+      id = 1;
+      firstName = 'Divya Sree';
+      lastName = 'Subramanian';
+      calculateSalary = () => {
+            return 100 * 100;
+      }
+}
+
+//Object creation
+let emp = new Employee();
+
+console.log(`Id ${emp.id} name ${emp.firstName} ${emp.lastName} ${emp.calculateSalary()}`)
+//state initalization
+emp.id = 1000;
+emp.firstName = 'Subramanian';
+emp.lastName = 'Murugan';
+console.log(`Id ${emp.id} name ${emp.firstName} ${emp.lastName} ${emp.calculateSalary()}`)
+
+
+3.through constructors parameters
+
+
+/* function Employee(id = 1, firstName = 'Divya Sree', lastName = 'Subramanian') {
+      //data + methods
+      this.id = id;
+      this.firstName = firstName;
+      this.lastName = lastName;
+      //methods
+      this.calculateSalary = function () {
+            return 100 * 100;
+      }
+} */
+class Employee {
+      //instance variables     
+      constructor(id = 1, firstName = 'Divya Sree', lastName = 'Subramanian') {
+            this.id = id;
+            this.firstName = firstName;
+            this.lastName = lastName;
+      }
+      calculateSalary = () => {
+            return 100 * 100;
+      }
+}
+//let emp = new Employee(1, 'Subramanian', 'Murugan');
+let emp = new Employee();
+console.log(`Id ${emp.id} name ${emp.firstName} ${emp.lastName} ${emp.calculateSalary()}`)
+
+
+
+Literal object:
+//literal pattern
+
+let emp = {
+      id: 1,
+      firstName: 'DivaSree',
+      lastName: 'Subramaian',
+      /*  calculateSalary: function () {
+             return 1000;
+       } */
+      /*  calculateSalary: () => {
+             return 1000;
+       } */
+      calculateSalary() {
+            return 1000;
+      }
+};
+console.log(`Id ${emp.id} name ${emp.firstName} ${emp.lastName} ${emp.calculateSalary()}`)
+
+emp.id = 100;
+emp.firstName = 'foo';
+emp.lastName = 'bar';
+console.log(`Id ${emp.id} name ${emp.firstName} ${emp.lastName} ${emp.calculateSalary()}`)
+////////////////////////////////////////////////////////////////////////////////
+
+Object Relationship: IS-A, HAS-A
+
+IS-A : Inheritance : Prototype based
+
+
+//class based inheritance
+
+class Account {
+      constructor() {
+            console.log('Account class Constructor');
+      }
+}
+class SavingsAccount extends Account {
+      constructor() {
+            super()
+            console.log('Savings Account class Constructor');
+      }
+}
+
+let sb = new SavingsAccount();
+
+
+//class based inheritance
+
+class Account {
+      constructor(id = 1, name = 'foo') {
+            console.log('Account class Constructor');
+            this.id = id;
+            this.name = name;
+      }
+      //methods
+      withdraw() {
+            return 100;
+      }
+}
+class SavingsAccount extends Account {
+      constructor(id, name) {
+            super(id, name)
+            console.log('Savings Account class Constructor');
+      }
+      //overriding: redefining
+      withdraw() {
+            return 500 * super.withdraw();
+      }
+}
+
+let sb = new SavingsAccount(12, 'subramanian');
+console.log(`id ${sb.id} name ${sb.name} amount ${sb.withdraw()}`)
+
+sb.id = 900;
+sb.name = 'bar'
+console.log(`id ${sb.id} name ${sb.name}`)
+
+
+Has-a:
+//Controller
+class OrderController {
+      constructor(orderService = new OrderService()) {
+            this.orderService = orderService;
+      }
+      //biz methods
+      findAll() {
+            return this.orderService.findAll();
+      }
+}
+
+//Service
+class OrderService {
+      constructor(repository = new OrderRepository()) {
+            //has -a: dependency injection
+            this.repository = repository;
+      }
+      findAll() {
+            return this.repository.findAll();
+      }
+}
+
+//Repository
+class OrderRepository {
+      constructor() {
+
+      }
+      findAll() {
+            return [{
+                        id: 1,
+                        totalValue: 210232,
+                        product: 'Lenvo think PAD'
+                  },
+                  {
+                        id: 2,
+                        totalValue: 310232,
+                        product: 'Mac Book Pro'
+                  }
+            ];
+      }
+}
+//Main App
+/* let repository = new OrderRepository();
+let orderService = new OrderService(repository);
+let orderController = new OrderController(orderService); */
+let orderController = new OrderController(new OrderService(new OrderRepository()));
+//invoke biz mehtods
+orderController.findAll().forEach(order => {
+      console.log(`${order.id} ${order.totalValue} ${order.product}`)
+});
+
+///////////////////////////////////////////////////////////////////////////////
+Object Destrucing:
+
+//Object destrucing
+/* 
+function displayEmployee(employee) {
+      //display employee details
+      console.log(`id ${employee.id} name ${employee.name} ${employee.salary}`)
+} */
+//short cut to access object property : destrucing
+
+/* function displayEmployee(employee) {
+      //
+      const { id, name, salary } = employee;
+      //display employee details
+      console.log(`id ${id} name ${name} ${salary}`)
+} */
+
+/* function displayEmployee({
+      id,
+      name,
+      salary
+}) {
+      //display employee details
+      console.log(`id ${id} name ${name} ${salary}`)
+} */
+
+const displayEmployee = ({
+      id,
+      name,
+      salary
+}) => console.log(`id ${id} name ${name} ${salary}`)
+
+displayEmployee({
+      id: 1,
+      name: 'subramanian',
+      salary: 4000
+});
+
+const displayEmployee = ({
+      id,
+      name,
+      salary,
+      address: {
+            city
+      }
+}) => console.log(`id ${id} name ${name} ${salary} ${city}`)
+displayEmployee({
+      id: 1,
+      name: 'subramanian',
+      salary: 4000,
+      address: {
+            city: 'Coimbatore'
+      }
+});
+.....................................................................
+
+Parameters:
+
+function getProduct(id, name) {
+      return {
+            id: id,
+            name: name
+      }
+}
+let products = getProduct(1, 'Lenvo think Pad');
+console.log(products)
+
+
+function getProduct(id, name) {
+
+      /* return {
+            //objectkey:localvariable ==same =>make it one
+            id: id,
+            name: name
+      } */
+      return {
+            id,
+            name
+      }
+}
+let products = getProduct(1, 'Lenvo think Pad');
+console.log(products)
+
+
+
+
+
+
+
+
+
+
