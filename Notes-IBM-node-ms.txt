@@ -1241,11 +1241,224 @@ Node Architecture:
 Node was built for building heavy IO APPLICATIONS in blocking / async way 
 
 
+Types of IO
+1.FS IO
+2.Network IO
+   -Socket Programming
+       ->HTTP,TCP/IP,UDP
+
+Web Applications using java:
+ JEE ,Servlets/jsp=>Tomcat ,JBoss=>containers=>JVM
+
+ When you give request---------------->Tomcat---create a thread--thread run
+
+
+Node Building blocks
+
+Node was built on the top javascript engine from google called "V8"
+
+V8
+Libuv
+  ->non block io apis
+  ->Event Queue
+  ->Event loops
+  ->Thread Pools
+Node bindings api
+..................................................................................
+
+Node in web applicaiton
+
+User ----request-------------Node Runtime-----delegate to os kernal
+
+..................................................................................
+
+Node Programming:
+
+1.how to run js on node.
+2.Global Objects in node
+3.Node js and javascript modularity.
+4.Node and event driven programming
+5.Node io programming
+   ->FS
+   -Web programming
 
 
 
+1.how to run js on node.
+
+ ->MODE
+   -REPL : Read  Evulate Print Loop : interactive cmd line mode.
+   -node command
+
+eg:
+node src/inputjsfile.js
+
+java com.ibm.Main
+
+node does not support browser objects
+ ->document,window,history....
+
+in browser window is parent  object
+
+in node process is parent object
+
+Process is core object:
+ which contains information about The Node runtime.
+
+Node supports 
+ ->Date,Math,Number,String,Boolean,JSON.....
 
 
+..................................................................................
+Javascript and modularity:
+
+How to write many programs,share code across the files.
+
+Modularity in java : through packages.
+
+JS has only file modularity.=> .js files
+
+
+In 2000, JS communities brought design patterns that how to link files and how to share code?
+
+1.Namespace design pattern
+2.AMD : Async module design pattern
+3.CJS : Common js : 2006 
+
+Note : Node was born in 2007-2008, when node was created , Node creator integrated
+CJS in the Node platform.
+
+
+4.2012 ES 6 committe brought new design pattern 
+  -ES 6 module design pattern
+
+5.System
+
+6.UMD
+
+
+CJS : Common js 
+
+ Sharing code among files : Module scope.
+ Linking files with other files
+
+Code :
+ -variable declarations
+ -classes declarations
+ -function declarations
+
+name.js
+let name='subramanian'
+
+greeter.js
+
+console.log(`welcome to ${name}`);
+
+CJS Provides keywords to share the code.
+
+code sharing
+exports
+module.exports
+
+linking
+require()
+
+
+
+exports is just variable, its intial is empty literal object
+
+ let exports= {};
+ 
+ exports.name = 'Subramanian';
+
+ let exports= {name:'Subramanian'};
+ 
+ return exports
+
+
+ require('./name');
+
+eg:
+name.js
+exports.name = 'Subramanian';
+exports.city = 'Coimbatore'
+exports.status = true
+
+
+
+/*
+ This is behind the scene node will take care
+
+function returnModule(){
+let exports= {};
+
+//let exports= {name:'Subramanian',city:'Coimbatore',status:true};
+exports.name = 'Subramanian';
+exports.name = 'Subramanian';
+exports.city = 'Coimbatore'
+exports.status = true
+return exports
+}
+ */
+
+
+
+index.js
+
+//{name:'Subramanian',city:'Coimbatore',status:true};
+/* const info = require('./name');
+
+console.log(`Name ${info.name}`);
+console.log(`City ${info.city}`);
+console.log(`Status ${info.status}`); */
+//object desturcing
+const {
+      name,
+      city,
+      status
+} = require('./name');
+
+console.log(`Name ${name}`);
+console.log(`City ${city}`);
+console.log(`Status ${status}`);
+................................................................................
+
+src/config/appconfig.js
+
+exports.version = '1.0.0'
+exports.appname = 'IBM Digital'
+exports.author = 'IBM';
+//method exports
+exports.getToken = function () {
+      return `Key: ${Math.random()}`
+}
+
+src/index.js
+
+const {
+      appname,
+      version,
+      author,
+      getToken
+} = require('./config/appconfig');
+
+console.log(appname, version, author, getToken());
+.................................................................................
+
+module.exports and exports are same : sharing code
+
+1.exports can exports anything after packing inside a single object
+   exports= {name:'Subramanian',city:'Coimbatore',status:true};
+
+2.exports can export multiple things at the same.
+
+1.module.exports does not export via object rather than it exports "As it is".
+
+   const name='test'
+   module.exports= name ======> name
+
+2.module.exports cant export multiple things at the same time.
+   only one single export.
 
 
 
