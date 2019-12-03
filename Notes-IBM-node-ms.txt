@@ -1460,6 +1460,230 @@ module.exports and exports are same : sharing code
 2.module.exports cant export multiple things at the same time.
    only one single export.
 
+ use case : single file , single class.
+
+
+const ORDERS = [{
+            id: 1,
+            totalValue: 210232,
+            product: 'Lenvo think PAD'
+      },
+      {
+            id: 2,
+            totalValue: 310232,
+            product: 'Mac Book Pro'
+      }
+];
+class OrderRepository {
+      constructor() {
+            console.log('Order Repository is being initalized');
+      }
+      findAll() {
+            return ORDERS;
+      }
+}
+
+module.exports = OrderRepository;
+
+
+const OrderRepository = require('./OrderRepository');
+
+class OrderService {
+      constructor(orderRepo = new OrderRepository()) {
+            this.orderRepo = orderRepo;
+      }
+      findAll() {
+            return this.orderRepo.findAll();
+      }
+}
+
+module.exports = OrderService;
+
+
+const OrderService = require('./OrderService');
+
+class OrderController {
+      constructor(orderService = new orderService()) {
+            this.orderService = orderService;
+      }
+      findAll() {
+            return this.orderService.findAll();
+      }
+}
+module.exports = OrderController
+
+const OrderRepository = require('./OrderRepository');
+const OrderService = require('./OrderService');
+const OrderController = require('./OrderController');
+
+
+function init() {
+      let controller = new OrderController(new OrderService(new OrderRepository()));
+      controller.findAll().forEach(order => console.log(`${order.id} ${order.totalValue} ${order.product}`));
+}
+init();
+..................................................................................
+node modules:
+
+Types of node modules:
+
+1.Custom module
+  Written you , eg: OrderController....
+2.in built modules
+   Modules are supplied by node , which are supplied during node installation.
+
+In built Modules:
+
+1.OS
+ Operating system information
+
+
+
+ require('./OrderRepository');
+  ->here you can see ./
+  ./ -current dir
+ require('os'); => 
+  -here no ./ 
+
+ Why?
+
+Note : if you are java devp, you know the classpath , how it works?
+
+ require('os');
+
+Node internally uses a search algorthim,node always looks the folder called
+ "node_modules" in the current project, if not , then it searches, the node in built installtion folder---c:/pf/node/node_nodules--if it finds it will pick up from there else it will throw error.
+
+
+require('./OrderRepository'); 
+   it will lookup in the current dir or sub dirs only.
+
+
+//os module
+//os.js
+const os = require('os');
+
+console.log(os.platform())
+
+console.log(os.arch())
+console.log(os.cpus())
+
+.................................................................................
+
+EventEmitter: How to write event driven programming.
+
+ It is used to build driven programming.
+ In node js most io applications are event driven.
+
+
+//Event Emitter
+//events.js
+const EventEmitter = require('events');
+
+//Create EventEmitter Object
+const emitter = new EventEmitter();
+
+//Subscriber : Who listens for signal(event) and data
+emitter.on('greet', function (data) {
+      console.log('data', data);
+});
+//Publisher: Publisher will send a signal(event) and data
+
+//greet is event, Hello is data
+emitter.emit('greet', 'Hello');
+
+const EventEmitter = require('events');
+
+
+//domain class with event emitters
+
+class OrderService extends EventEmitter {
+      constructor() {
+            super();
+            this.on('order', function (order) {
+                  console.log('Order has been processed!')
+                  console.log(order);
+            });
+      }
+      //biz method
+      placeOrder(order) {
+            this.emit('order', order);
+      }
+}
+let orderService = new OrderService();
+orderService.placeOrder({
+      id: 1,
+      totalValue: 10000,
+      name: 'Lenvo Think Pad Gen 2'
+})
+
+//////////////////////////////////////////////////////////////////////////////////
+
+How to write async or non blocking programming?
+
+
+Requirements to write async code?
+
+1.You must have low level async api and eq high level async api
+2.handler function / callback function : function as param.
+
+api for async code: in node
+
+1.timers
+2.non blocking io apis
+  -fs,http,ftp.....
+
+
+//Async code with timers
+
+function sayHello() {
+      return 'Hello'
+}
+
+function sayGoodBye() {
+      return 'Good Bye!';
+}
+
+function start(handler) {
+      //invoke hanlder
+      setTimeout(function () {
+            handler();
+      }, 5000);
+}
+let sleep = function () {
+      console.log('I have slept well!');
+};
+console.log(sayHello());
+start(sleep);
+console.log(sayGoodBye());
+
+//////////////////////////////////////////////////////////////////////////////////
+
+Style of writing async code
+
+1.callback pattern  : which is core
+2.Promise Pattern
+3.async and await pattern
+
+
+callback Pattern:
+1.passing function as a parameter which is called
+  because of async operations.
+
+start(function () {
+      console.log('I have slept well again!');
+});
+
+Any problems with callback pattern?
+ -Callback hell
+
+
+
+
+
+
+
+
 
 
 
