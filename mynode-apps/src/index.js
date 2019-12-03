@@ -1,48 +1,19 @@
-const getUser = () => {
-      return new Promise((resolve, reject) => {
-            let fakeuser = {
-                  name: 'Subramanian'
-            };
-            if (fakeuser) {
-                  setTimeout(() => {
-                        resolve(fakeuser)
-                  }, 2000);
-            } else {
-                  setTimeout(() => {
-                        reject({
-                              err: 'User not Available'
-                        })
-                  }, 2000);
-            }
-      });
-};
+//async and await keywords
 
-const login = user => {
-      return new Promise((resolve, reject) => {
-            if (user.name === 'Subramanian') {
-                  setTimeout(() => resolve({
-                        loginsuccess: 'valid User'
-                  }), 1000);
-            } else {
-                  setTimeout(() => reject({
-                        err: 'Invaild User',
-                        code: 400,
-                  }), 1000);
-            }
-      });
+async function startFlow() {
+      //promise
+      try {
+            /* let fakeUser = {
+                  name: 'subramanain'
+            } */
+            let fakeUser;
+            let promise = fakeUser ? Promise.resolve(fakeUser) : Promise.reject({
+                  err: 'Something went wrong'
+            });
+            let result = await promise; //await keyword passes the current execution in background ,once success , it result result
+            console.log(result);
+      } catch (err) {
+            console.log(err);
+      }
 }
-
-const dashboard = () => {
-      console.log('Welcome to Dash board');
-};
-
-console.log('start....')
-getUser()
-      .then(user => login(user))
-      .then(() => dashboard())
-      .catch(err => {
-            console.log(err)
-      })
-      .finally(() => console.log('async operation is done'))
-
-console.log('going on')
+startFlow();

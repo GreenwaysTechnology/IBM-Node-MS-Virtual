@@ -1873,5 +1873,52 @@ getUser()
 
 console.log('going on')
 
+..................................................................................
+
+async and await pattern:
+  
+ It is simplest pattern of Promises.
+ It is promise driven only.
+
+ "Sync style of Async Code" 
 
 
+async key must be used with function declaration.
+await is used to pause async calls
+
+//async and await
+
+async function sayHello() {
+      //return Promise.resolve("Hello");
+      return "Hello";
+}
+//this function returns promise :
+//by default async function return promise
+sayHello().then(res => console.log(res));
+
+async function getCounter() {
+      return Promise.resolve(1000);
+}
+getCounter().then(res => console.log(res));
+
+
+............................................................................
+//async and await keywords
+
+async function startFlow() {
+      //promise
+      try {
+            /* let fakeUser = {
+                  name: 'subramanain'
+            } */
+            let fakeUser;
+            let promise = fakeUser ? Promise.resolve(fakeUser) : Promise.reject({
+                  err: 'Something went wrong'
+            });
+            let result = await promise; //await keyword passes the current execution in background ,once success , it result result
+            console.log(result);
+      } catch (err) {
+            console.log(err);
+      }
+}
+startFlow();
