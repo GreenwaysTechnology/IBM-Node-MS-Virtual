@@ -1065,7 +1065,7 @@ displayEmployee({
             city: 'Coimbatore'
       }
 });
-.....................................................................
+..................................................................................
 
 Parameters:
 
@@ -1094,8 +1094,146 @@ function getProduct(id, name) {
 let products = getProduct(1, 'Lenvo think Pad');
 console.log(products)
 
+*****************....................********************************************
+Node:
+.....
+What is Node?
+Why Node is?
+How Node works?
+
+ "Node is non blocking IO Platform for building IO application on javascript"
+
+Javascript cant be used for building IO Application.
+Javascript invented for web document manipulation.
+
+What is IO APPLICATIONS?
+I -iNPUT -Read
+O -OUPT - Write
+
+io = read + write.
+
+Every pl supports IO.
 
 
+IN node IO is non blocking.
+
+What is non blocking?
+
+
+Concurrency:
+ Doing multiple things at the same time.
+
+How to implement concurrency?
+ 
+Process ==> Multi Process 
+SubProcess => Multi subprocess
+
+Process : program in execution.
+
+Types of Program:
+1.Passive Program
+  Program which is in harddisk
+2.Active Program
+  Program which is in RAM. => Process.
+
+Computers support multi process with help of time sharing concepts
+
+Any thing inside RAM: Will have structure
+
+Process has structure
+
+what javascript code is executed?
+  ->inside javascript engine.
+javascript engine is process : V8,Spider Monkey,Chakra
+ JVM is also process
+
+Heap :
+  Allocating memory during runtime.
+  Allocating memory for Running code dynamically.
+  in js /jvm : object creations
+
+Stack :
+ For creating stack frames-threads
+
+Program Data :
+
+
+function  add(a,b){
+  return a+b;
+}
+
+add(10,10); => function invocation===>allocate memory==>?Stack
+
+
+...............................................................................
+
+Multi threading:
+
+javascript does not support multi threading. Js has only one thread. Programmer cant create multi threads.
+
+function  add(a,b){
+  return a+b;
+}
+
+add(10,10);===>stack==>stackframe(a thread)===>running==complete
+
+add(10,10);===>stack==>stackframe(a thread)===>running==complete
+
+add(10,10);===>stack==>stackframe(a thread)===>running==complete
+
+Sequenctial flow:  sync work flow
+
+Can i have multi threading(concurrency) in javascript?
+
+Yes!.....Concurrency implementation in javascript is so different than other languages.
+
+Concurrency model is called as "Event Loop concurrency" based on design pattern called "Reactor design pattern"
+
+Why Reactor design pattern based concurrency?
+ Because of evils of threads.
+
+1.Resource 
+2.Thread dead lock
+3.Race conditions
+
+
+Use case :
+
+if a thread is created to read big files like 10 GB file.
+ if you create more and more threads for such heavy file io operations.
+
+
+"Blocking IO" : a thread may block a resource on process during file read operation.
+
+"NonBlocking" / Async Concurrency /Reactor Design pattern model.
+
+
+
+Event Queue:
+  The place where all completed task is saveed in the form of message called
+Event Message.
+
+What could be inside that message?
+ Message  = {data + how to handle message message: handler =>function=>callback function)
+
+Event loop:
+ It is while loop, which iterates Event Queue
+
+
+How to delegate to os? What is condition ? How js engine will come to know to delegate to back ground?
+
+ add------->stack---frame created--execution-complete
+
+ addAsync---->stack--framecreate--|is this api is part of browser api or not--if it is then that api is exectued in the back ground.
+
+
+Javascript language provides built in async api's:
+..................................................
+1.Timers
+   setTimeout,setInterval
+2.XMLHttpRequest (Ajax)
+3.WebSocket
+4.DOM Event apis -click,mousemove....
 
 
 
