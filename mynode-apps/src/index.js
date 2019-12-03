@@ -1,43 +1,48 @@
-//Callback Hell : when you nest so many async calls, it will lead complexity with respect to code maintaince,debugging,lot of boiler plate code
-
-
-
-//return data if available else return error message
-const getUser = (success, failure) => {
-      let fakeUser = {
-            name: 'Subramanian'
-      };
-      // let fakeUser;
-      //biz logic
-      if (fakeUser) {
-            setTimeout(() => success(fakeUser), 1000);
-      } else {
-            setTimeout(() => failure({
-                  err: 'User data not Found!'
-            }), 1000);
-      }
+const getUser = () => {
+      return new Promise((resolve, reject) => {
+            let fakeuser = {
+                  name: 'Subramanian'
+            };
+            if (fakeuser) {
+                  setTimeout(() => {
+                        resolve(fakeuser)
+                  }, 2000);
+            } else {
+                  setTimeout(() => {
+                        reject({
+                              err: 'User not Available'
+                        })
+                  }, 2000);
+            }
+      });
 };
-const login = (user, success, failure) => {
-      if (user.name === 'Subramanian') {
-            setTimeout(() => success({
-                  loginsuccess: 'valid User',
-                  userName: user.name
-            }), 1000);
-      } else {
-            setTimeout(() => failure({
-                  err: 'Invaild User'
-            }), 1000);
-      }
-}
-const dashboard = user => {
-      console.log(`Welcome to ${user}`);
+
+const login = user => {
+      return new Promise((resolve, reject) => {
+            if (user.name === 'Subramanian') {
+                  setTimeout(() => resolve({
+                        loginsuccess: 'valid User'
+                  }), 1000);
+            } else {
+                  setTimeout(() => reject({
+                        err: 'Invaild User',
+                        code: 400,
+                  }), 1000);
+            }
+      });
 }
 
-//function as param
-getUser(user => {
-      login(user, isValidUser => {
-            dashboard(isValidUser.userName)
-      }, err => console.log(err))
-}, err => {
-      console.log(err)
-});
+const dashboard = () => {
+      console.log('Welcome to Dash board');
+};
+
+console.log('start....')
+getUser()
+      .then(user => login(user))
+      .then(() => dashboard())
+      .catch(err => {
+            console.log(err)
+      })
+      .finally(() => console.log('async operation is done'))
+
+console.log('going on')
