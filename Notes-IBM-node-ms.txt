@@ -1236,6 +1236,21 @@ Javascript language provides built in async api's:
 4.DOM Event apis -click,mousemove....
 
 
+Node Architecture:
+
+Node was built for building heavy IO APPLICATIONS in blocking / async way 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
