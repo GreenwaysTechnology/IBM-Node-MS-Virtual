@@ -2452,5 +2452,314 @@ which is part of "content-type" header
 
 content-type" : "application/json".
 
+const http = require('http');
+const USERS = require('./mock-data/users-mock');
+
+const port = 3000;
+
+const requestHandler = (request, response) => {
+      //setting response headers
+      response.setHeader('Content-Type', 'application/json');
+      //request and response processing
+      response.write(JSON.stringify(USERS));
+      response.end() //close  stream
+};
+const server = http.createServer(requestHandler);
+
+
+//start the server
+server.listen(port, () => {
+      console.log(`Server is Up at ${port}! `);
+});
+//////////////////////////////////////////////////////////////////////////////////
+
+How to read data sent by client?
+
+const http = require('http');
+
+const port = 3000;
+
+const requestHandler = (request, response) => {
+      //setting response headers
+      response.setHeader('Content-Type', 'application/json');
+      //request and response processing
+      let data = ''
+      request.on('data', function (chunk) {
+            data += chunk;
+      });
+      request.on('end', function () {
+            console.log(data);
+            response.write(JSON.stringify({
+                  message: 'Data has been submitted'
+            }));
+            response.end() //close  stream
+      });
+
+};
+const server = http.createServer(requestHandler);
+
+
+//start the server
+server.listen(port, () => {
+      console.log(`Server is Up at ${port}! `);
+});
+
+///////////////////////////////////////////////////////////////////////////////////
+
+IS it possible to build real time web apps by using just pure http module alone?
+
+ Yes! but it is very complex
+
+node modules types
+1.custom module - discussed
+2.in built modules - disucssed
+3.third party modules - 
+
+npm:   
+ node package manager === mvn
+npm is tool is used to distribute node modules to others
+and you can get node modules from other others.
+
+npm tool is distributed along with node installation
+
+npm uses public repository server called npmjs.com npmjs.org
+
+tools and libs,frameworks all are distributed as node modules into repository.
+
+
+
+Javascript Project Structure:(server side/ client side)
+.........................................................
+
+The project must have two things
+
+1.package.json file :
+   meta file which describes the project information
+2.node_modules folder
+   which contains libs/frameworks/tools code.
+
+
+
+create package.json file
+
+>npm init
+
+package.json
+{
+  "name": "mynode-apps",
+  "version": "1.0.0",
+  "description": "This is node training app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GreenwaysTechnology/IBM-Node-MS-Virtual.git"
+  },
+  "keywords": [
+    "node",
+    "training"
+  ],
+  "author": "Subramanian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GreenwaysTechnology/IBM-Node-MS-Virtual/issues"
+  },
+  "homepage": "https://github.com/GreenwaysTechnology/IBM-Node-MS-Virtual#readme"
+}
+
+npm is used
+
+to install,uninstall,publish node modules from node repo / into node repo.
+
+if you install third party modules , into your project, node distributes npm tool ,using this you can install,uninstall,upgrade node modules.
+
+
+npm syntax:
+
+npm commandName.
+
+
+node_modules : folder which can hold all javascript modules downloaded from repo.
+
+installing module:
+
+>npm install  moduleName  --options
+>npm i moduleName --options
+
+options:
+ --save
+ --save-dev
+ -g
+
+Development
+
+Production
+
+if you are installing any node module, you can tell, do you want to use only for development
+or development + production.
+
+Unit testing libs : Junit.jar===>
+
+ --save = >    development + production
+ --save-dev => only for development
+
+
+> npm i --save lodash
+
+
+ "dependencies": {
+    "lodash": "^4.17.15"
+  }
+
+index.js
+
+const _ = require('lodash');
+
+let array = [1];
+let other = _.concat(array, 2, [3], [
+      [4]
+]);
+console.log(other);
+// => [1, 2, 3, [4]]
+
+console.log(array);
+
+................................................................................................
+
+Dev Dependencies:
+
+>npm i chai --save-dev
+
+"devDependencies": {
+    "chai": "^4.2.0"
+  }
+
+
+npm uninstalling:
+................
+>npm uninstall jquery --save
+
+
+..........................................................................................
+
+-g : global dependencies:
+..........................
+global package : package will be installed globally 
+ inside c drive.
+ looks like exe/bat files in windows
+
+global packages not used for development(coding)
+
+tools
+ ->build system
+ ->servers - webservers,testing servers
+ ->compilers : babel,tsc....
+
+Demo: 
+
+1.tool called mocha  :  it is testing server
+
+>npm i mocha -g
+
+
+Problems with Global Modules:
+..............................
+
+g vs --save-dev:
+
+global dependencies not good for multiple sharing projects
+install tools as project specific. --save-dev
+
+>npm i mocha --save-dev
+
+javascript automation:
+ single command trigger workflows
+
+section is used for  automation:
+
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+
+"scripts": {
+    "commandName": "task to be automated"
+}
+commandname can be provided by npm called built in commands
+
+eg:
+start
+test
+postinstall
+preinstall
+
+custom commands also possible.
+
+....................................................................................
+
+
+"subu" : "node src/server.js"
+
+For running:
+>npm test | start  : in built commands
+>npm run subu | npm run customCommand.
+
+"scripts": {
+    "test": "mocha",
+    "subu": "node src/server.js",
+    "start": "node src/server.js",
+    "build": "webpack"
+  }
+
+...............................................................................................
+
+ES 6 modules:
+  next module system after commonjs(exports,module.exports,require)
+
+ES 6 moudles are javascript committe modules
+
+export = exports =>code will be packed inside object
+export default = module.exports =  code will be returned as it is
+import == require()
+
+Note: Node does not support es 6 modules, only cjs
+
+How to run the es 6 module on node?
+
+webpack : web pack is npm module, / tool is used to bundle js apps  which are portable on browser/node , without worrying about module patterns.
+
+>npm i webpack webpack-cli  --save-dev
+
+webpack.config.js
+const path = require('path');
+
+module.exports = {
+      entry: './src/index.js',
+      output: {
+            path: path.resolve(__dirname, 'dist'),
+            filename: 'bundle.js'
+      }
+};
+
+  "scripts": {
+    "test": "mocha",
+    "subu": "node src/index.js",
+    "build": "webpack"
+  }
+
+>npm run build
+
+
+>node run build
+
+
+
+
+
+
+
+
+
 
 

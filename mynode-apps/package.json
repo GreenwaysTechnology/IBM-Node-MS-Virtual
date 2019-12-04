@@ -1,0 +1,22 @@
+{
+  "name": "mynode-apps",
+  "version": "1.0.0",
+  "description": "This is node training app",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "subu": "node src/index.js",
+    "build": "webpack"
+  },
+  "author": "Subramanian",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
+}
