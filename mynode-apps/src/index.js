@@ -12,6 +12,7 @@ const requestHandler = (request, response) => {
 };
 const server = http.createServer(requestHandler);
 
+
 //start the server
 server.listen(port, () => {
       console.log(`Server is Up at ${port}! `);
