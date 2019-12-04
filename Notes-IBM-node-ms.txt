@@ -1922,3 +1922,535 @@ async function startFlow() {
       }
 }
 startFlow();
+/////////////////////*********/////////////////////////////////////////////////////
+
+Async Programming in IO: Non blocking IO:
+
+1.fs io
+2.network io
+  -http : web apps
+
+
+
+1.fs io
+
+//fs.js : non block io
+const fs = require('fs');
+
+//read file
+const filePath = './src/info.txt';
+const config = {
+      encoding: 'UTF-8'
+}
+console.log('start')
+//readFile(path,config,handler/callback)
+//readFile---stack---|libuv----->OS Kernal - starts spining a thread to read file.
+fs.readFile(filePath, config, function (err, data) {
+      if (err) throw err;
+      console.log(data);
+});
+console.log('end')
+
+
+//fs.js : non block io
+const fs = require('fs');
+
+//write file
+const writeFilepath = './src/info-copy.txt';
+const data = 'This is node IO file!';
+console.log('start')
+fs.writeFile(writeFilepath, data, function (err) {
+      if (err) throw err;
+      console.info(`The file ${writeFilepath} has been written!`)
+});
+console.log('end')
+.....................................................................
+
+Does node support blocking IO?
+
+Blocking io means
+
+  readFile----stack--frame --read file
+
+All blocking io operations are handled by libuv thread pools.
+ when you read, node will assign a thread  to read / write file.
+
+Note:
+1.Dont use blocking io apis for big files
+2.Dont use blocking io apis in network applications.
+3.Node supports only disk file io in blocking mode, not network apis
+
+Blocking io dont have callbacks.
+
+
+Node blocking io Operations:
+.........................
+
+fs.readFileSync()
+fs.writeFileSync()
+
+
+const fs = require('fs');
+
+const filePath = './src/info.txt';
+const config = {
+      encoding: 'UTF-8'
+}
+
+console.log('start');
+const data = fs.readFileSync(filePath, config);
+console.log(data);
+console.log('end')
+
+...................................................................................
+Global Objects in node:
+
+1.process
+2.JS objects-math,date....
+3.exports
+4.module
+
+Global Variables:
+
+5.__dirname
+      ->Get current dir path
+6.Global Objects in node:
+
+1.process
+2.JS objects-math,date....
+3.exports
+4.module
+5.__dirname
+      ->Get current dir path
+6.__filename
+     ->Get current dir + path__filename
+     ->Get current dir + path
+
+
+Use Case:
+  current dir + fileName
+	dir/src + fileName
+
+
+//fs.js : non block io
+const fs = require('fs');
+const path = require('path');
+
+/* console.log(__dirname)
+console.log(__filename) */
+
+
+
+//read file
+const filePath = path.join(__dirname, 'info.txt')
+const config = {
+      encoding: 'UTF-8'
+}
+console.log('start')
+fs.readFile(filePath, config, function (err, data) {
+      if (err) throw err;
+      console.log(data);
+});
+console.log('end')
+
+...................................................................................
+
+IO operations can be done sync or async way.
+
+Async io operations can be done two ways.
+
+1.Non-Streaming
+2.Streaming  : Evented IO : Event driven IO.
+
+
+Non Streaming IO : read / write
+
+The operating system completes the whole file read operation, sends to node process memory  , and finally will be delivered to user
+
+Streaming Mode: read /write
+
+
+node breaks content into smaller unit called "chunk"
+node streams /send data in order chunk by chunk.
+
+Types of Streams:
+
+1.Readaable Stream : input
+2.Writeable stream : output
+3.Duplex stream : read + output
+
+
+Built in readable Streams:
+
+HTTP responses, on the client
+HTTP requests, on the server
+fs read streams
+zlib streams
+crypto streams
+TCP sockets
+child process stdout and stderr
+process.stdin
+
+Writable Streams:
+HTTP requests, on the client
+HTTP responses, on the server
+fs write streams
+zlib streams
+crypto streams
+TCP sockets
+child process stdin
+process.stdout, process.stderr
+
+All streaming apis are powered with events
+node io streams has built in events.
+events are emitted by node.
+Our programs are listeners
+
+common events in all io
+
+data event:
+ which is emitted by node, for each chunk.
+
+close event:
+The 'close' event is emitted when the stream and any of its underlying resources (a file descriptor, for example) have been closed.
+
+end event:
+The 'end' event is emitted when there is no more data to be consumed from the stream.
+
+Event: 'error'
+ The 'error' event may be emitted by a Readable implementation at any time
+Typically, this may occur if the underlying stream is unable to generate data due to an underlying internal failure, or when a stream implementation attempts to push an invalid chunk of data.
+
+
+
+const fs = require('fs');
+const path = require('path');
+
+const fileName = path.join(__dirname, 'info.txt');
+const config = {
+      encoding: 'UTF-8'
+}
+//read stream
+const inputStream = fs.createReadStream(fileName, config);
+
+//register listeners for data,error...
+
+let data = '';
+inputStream.on('data', function (chunk) {
+      console.log(`Received ${chunk.length} bytes of data.`);
+      data += chunk;
+});
+
+//end event
+inputStream.on('end', function () {
+      console.log('There will be no more data to read!');
+      console.log(data);
+})
+
+//error event: for error handling
+inputStream.on('error', function (err) {
+      console.log(`Some thing went wrong! ${err}`)
+});
+
+..................................................................................
+const fs = require('fs');
+const path = require('path');
+
+const fileName = path.join(__dirname, 'grains.txt');
+const config = {
+      encoding: 'utf8',
+      flag: 'w'
+};
+const grains = ['wheat', 'rice', 'oats'];
+
+const outputStream = fs.createWriteStream(fileName, config);
+
+while (grains.length) {
+      let data = grains.pop() + " ";
+      outputStream.write(data);
+      console.log("Wrote: %s", data);
+}
+///////////////////////////////////////////////////////////////////////////////////
+How to create json file?
+
+const fs = require('fs');
+const path = require('path');
+
+const fileName = path.join(__dirname, 'config.json');
+const config = {
+      encoding: 'utf8',
+      flag: 'w'
+};
+const data = [{
+      name: 'IBM digital',
+      version: '1.1.'
+}];
+
+const outputStream = fs.createWriteStream(fileName, config);
+outputStream.write(JSON.stringify(data));
+////////////////////////////////////////////////////////////////////////////////
+
+Back Pressure:
+.............
+
+If you want to read data from one file and write into anthoer file.
+If you want to read data from network sockets and write into anthoer file /another socket.
+
+Read + Write => togther
+Eg:
+ copy and paste
+ file moving 
+ file copies
+
+Read + write : simple eg:
+//read + write
+const fs = require('fs');
+const path = require('path');
+
+const fileName = path.join(__dirname, 'info.txt');
+const config = {
+      encoding: 'UTF-8'
+}
+
+const outputFileName = path.join(__dirname, 'greeter.txt');
+const inputStream = fs.createReadStream(fileName, config);
+const outputStream = fs.createWriteStream(outputFileName, config);
+
+//Register data event.
+inputStream.on('data', function (chunk) {
+      console.log(`Received ${chunk.length} bytes of data.`);
+      console.log(chunk);
+      outputStream.write(chunk);
+});
+
+
+//end event
+inputStream.on('end', function () {
+      console.log('There will be no more data to read!');
+      outputStream.close();
+})
+
+//error event: for error handling
+inputStream.on('error', function (err) {
+      console.log(`Some thing went wrong! ${err}`)
+});
+
+outputStream.on('close', function () {
+      console.log(`File write operation is completed`);
+});
+
+Problems when you do read and write together
+
+1. In general read operation is faster than write operation
+
+
+Back Pressure means inputstream is fast, outputstream slow, then data will be
+lost.
+
+Handling back pressure:
+.......................
+Pause Input stream if the Node Process memory is full(Buffer),resume if buffer/process memory is empty.
+
+stream.pause() if stream is full
+else
+stream.resume() if stream is drain
+
+const fs = require('fs');
+const path = require('path');
+
+const inputfileName = path.join(__dirname, 'big.file');
+const outputfileName = path.join(__dirname, 'big_copy.file');
+
+const config = {
+      encoding: 'UTF-8'
+}
+
+//Back pressure handling
+const readerStream = fs.createReadStream(inputfileName, config);
+const writeStr = fs.createWriteStream(outputfileName, config);
+
+readerStream.on('data', function (chunk) {
+      console.log(`Received ${chunk.length} bytes of data.`);
+      let buffer_good = writeStr.write(chunk);
+      if (!buffer_good) readerStream.pause();
+});
+writeStr.on('drain', function () {
+      console.log('buffer drained!');
+      readerStream.resume();
+});
+
+readerStream.on('end', function () {
+      //console.log(data);
+});
+
+readerStream.on('error', function (err) {
+      console.log(err.stack);
+});
+/////////////////////////////////////////////////////////////////////////////////
+const fs = require('fs');
+const path = require('path');
+
+const inputfileName = path.join(__dirname, 'big.file');
+const outputfileName = path.join(__dirname, 'big_copy.file');
+
+const config = {
+      encoding: 'UTF-8'
+}
+
+//Back pressure handling
+const readerStream = fs.createReadStream(inputfileName, config);
+const writeStr = fs.createWriteStream(outputfileName, config);
+
+//backPressure streams
+//pipe method is simplest method which wraps resume,pasuse,drain 
+readerStream.pipe(writeStr);
+................................................................................
+
+Web Apps in Node:
+................
+
+Tradtional web work flow
+
+Client-----request----------------WebServer--- thread--will io operation.
+Client-----request----------------WebServer----thread--will io operation.
+Client-----request----------------WebServer---thread-- will io operation.
+Client-----request----------------WebServer---thread-- will io operation.
+
+
+
+Non Blocking web model(Node.js):
+...............................
+
+Client-----request------WebServer built by node---|-            will io operation.
+Client-----request------WebServer built by node---|- libvu --os will io operation.
+Client-----request----- WebServer built by node---|-            will io operation.
+Client-----request----- WebServer built by node---|-            will io opeeration
+							
+
+What is http? 
+
+Protocal : The rules for what?
+Data transmission from one memory another memory address.
+
+
+Network layer:
+
+TCP/IP
+
+1989 : Tim berners who created  protocal called "HTTP" 
+
+http was created for transfering web documents from one machine machine.
+
+http is channel, duplex channel for transfering data via internet.
+
+How channel is represented in machine?
+
+It is program, c program.
+
+http itself is c program.
+
+Program collection of variables and methods
+
+HTTP is collections of variables and methods.
+
+variables are called as Headers
+methods are called as HTTP Verbs : GET,POST,DELETE,PUT,TRACE,DEBUG..........
+
+
+HTTP is duplex stream : input and output.
+
+input is called request from the client Persptive : read
+output is called response from the server persptive. :write.
+
+HTTP and applications:
+
+Every pl, provides high level api to access low level http layer.
+
+PL            java/c#/javascript(node/ajax)
+|                   |
+HTTP Layer        http
+..............................................................................
+
+node and http 
+node provides http high level api from 'http.js' through module.
+
+
+//create web server
+//create web app
+
+//start the webserver
+
+class:http:ServerResponse : output
+class:http:ClientRequest : input
+class:http:Server : handling low socket operations
+
+
+First web server,app:
+.....................
+
+const http = require('http');
+
+const port = 3000;
+
+//Request Handler /callback function called when ever new request comes to node server.
+const requestHandler = function (request, response) {
+      //here we handle client request and response : io
+      response.write('<h1>Hello  Node Web App!</h1>');
+      //close the response stream(outstream)
+      response.end();
+}
+//Create Web Server
+const server = http.createServer(requestHandler);
+
+//start the Server / bind socket
+
+server.listen(port, function () {
+      console.group(`Node Web Server is listening @ ${port}`);
+});
+
+////////////////////////////////////////////////////////////////////////////////
+
+How to attach events on server?
+
+const http = require('http');
+
+const port = 3000;
+
+//Request Handler /callback function called when ever new request comes to node server.
+const requestHandler = function (request, response) {
+      //here we handle client request and response : io
+      response.write('<h1>Hello  Node Web App!</h1>');
+      //close the response stream(outstream)
+      response.end();
+}
+//Create Web Server
+const server = http.createServer(requestHandler);
+
+//start the Server / bind socket
+
+server.listen(port, function () {
+      console.group(`Node Web Server is listening @ ${port}`);
+});
+
+server.on('request', function (request, response) {
+      console.log(`Request received ${new Date()}`)
+});
+///////////////////////////////////////////////////////////////////////////////
+
+
+Types of responses:
+
+html
+data : JSON.
+
+content type: the server will send data to client in different formats that is called content type
+default format is "text/plain".
+
+which is part of "content-type" header
+
+"content-type" : "text/plain".
+
+content-type" : "application/json".
+
+
+

@@ -1,19 +1,18 @@
-//async and await keywords
+const http = require('http');
+const USERS = require('./mock-data/users-mock');
 
-async function startFlow() {
-      //promise
-      try {
-            /* let fakeUser = {
-                  name: 'subramanain'
-            } */
-            let fakeUser;
-            let promise = fakeUser ? Promise.resolve(fakeUser) : Promise.reject({
-                  err: 'Something went wrong'
-            });
-            let result = await promise; //await keyword passes the current execution in background ,once success , it result result
-            console.log(result);
-      } catch (err) {
-            console.log(err);
-      }
-}
-startFlow();
+const port = 3000;
+
+const requestHandler = (request, response) => {
+      //setting response headers
+      response.setHeader('Content-Type', 'application/json');
+      //request and response processing
+      response.write(JSON.stringify(USERS));
+      response.end() //close  stream
+};
+const server = http.createServer(requestHandler);
+
+//start the server
+server.listen(port, () => {
+      console.log(`Server is Up at ${port}! `);
+});
