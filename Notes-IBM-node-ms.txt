@@ -2751,10 +2751,249 @@ module.exports = {
 >npm run build
 
 
->node run build
+Webpack is awesome tool for distributing application to production
+
+............................................................................................
+
+Web applications on node:
+
+Problems with http core module.
+
+1.complex apps you cant write
+2.no design patterns
+3.url mappings,method mappings
+
+
+Frameworks:
+
+ 1.express.js : it is web framework written by node core team
+
+
+Express is Node framework built on the top of node http module.
+
+
+You can create two types of application
+
+1.RESTFull web services
+2.Dynamic web application 
+
+
+HOW To implement REST Architecutre?
+
+Every pl today provides implementation for build rest full architecutres.
+
+eg:
+java
+->JXRS
+Spring Rest
+
+c#
+web api
+
+javascript - node ->express
+
+
+...........................................................................................
+
+Express app:
+
+
+Setup:
+
+>mkdir myexpress-app
+>cd myexpress-app
+>code .
+>npm init
+
+>npm i  express --save
+
+Express and REST architecture:
+..............................
+
+Express core concepts:
+
+1.Express Application : collection of many objects
+2.Express Modules
+3.Express middlewares
+4.Express with third party libs.
+
+
+Use case : How to create simple REST API : get,post,delete,put...
+
+
+const express = require('express');
+
+const port = 3000;
+//Create Application Object
+const app = express();
+
+//REST End Points
+//http://localhost:3000/api/list
+
+app.get('/api/list', function (req, res) {
+      res.end('api list get is called');
+})
+
+app.post('/api/list', function (req, res) {
+      res.end('api list post is called');
+})
+
+app.put('/api/list', function (req, res) {
+      res.end('api list put is called');
+})
+app.delete('/api/list', function (req, res) {
+      res.end('api list delete is called');
+})
+
+
+//start server 
+app.listen(port, function () {
+      console.log(`Express Server is Ready at ${port}`);
+});
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+Modularity : 
+
+The below is not modular
+
+const express = require('express');
+const TODOS = require('./mock-data/todos');
+const USERS = require('./mock-data/users');
+
+const port = 3000;
+//Create Application Object
+const app = express();
+
+//REST End Points :TODOS
+
+//http://localhost:3000/api/todos/list
+
+app.get('/api/todos/list', function (req, res) {
+      res.json(TODOS);
+})
+//http://localhost:3000/api/todos/:id
+//http://localhost:3000/api/todos/2
+app.get('/api/todos/:id', function (req, res) {
+      //read Request parameter
+      const id = parseInt(req.params.id)
+      const filteredTo = TODOS.filter(todo => {
+            return todo.id === id;
+      });
+      res.json(filteredTo);
+})
+//REST END POINT : USERS
+
+//http://localhost:3000/api/users/list
+
+app.get('/api/users/list', function (req, res) {
+      res.json(USERS);
+})
+//http://localhost:3000/api/users/:id
+//http://localhost:3000/api/users/2
+app.get('/api/users/:id', function (req, res) {
+      //read Request parameter
+      const id = parseInt(req.params.id)
+      const filteredUsers = USERS.filter(user => {
+            return user.id === id;
+      });
+      res.json(filteredUsers);
+})
+
+//start server 
+app.listen(port, function () {
+      console.log(`Express Server is Ready at ${port}`);
+});
+
+Modularity : Express apps provides logical modularity , separating application into logical modules based on "domain" domain driven design.
+
+Todo module
+User module
+Post module
+Customer module
+invoice module
+
+Express provides a spcial Object called "Router" Object which helps to separate code into modular way.
+
+
+src/todos/todosModule.js
+
+//build todos rest end points
+const express = require('express');
+const TODOS = require('../mock-data/todos');
+
+//create router : submodule
+const todosModule = express.Router();
+
+//REST End Points :TODOS
+//http://localhost:3000/api/todos/list
+todosModule.get('/list', function (req, res) {
+      res.json(TODOS);
+})
+
+//http://localhost:3000/api/todos/:id
+//http://localhost:3000/api/todos/2
+todosModule.get('/:id', function (req, res) {
+      //read Request parameter
+      const id = parseInt(req.params.id)
+      const filteredTo = TODOS.filter(todo => {
+            return todo.id === id;
+      });
+      res.json(filteredTo);
+})
+
+module.exports = todosModule;
+
+//build todos rest end points
+const express = require('express');
+const USERS = require('../mock-data/users');
+
+//create router : submodule
+const usersModule = express.Router();
 
 
 
+
+src/todos/usersModule.js
+//REST END POINT : USERS
+
+//http://localhost:3000/api/users/list
+
+usersModule.get('/list', function (req, res) {
+      res.json(USERS);
+})
+//http://localhost:3000/api/users/:id
+//http://localhost:3000/api/users/2
+usersModule.get('/:id', function (req, res) {
+      //read Request parameter
+      const id = parseInt(req.params.id)
+      const filteredUsers = USERS.filter(user => {
+            return user.id === id;
+      });
+      res.json(filteredUsers);
+})
+
+module.exports = usersModule;
+
+
+src/app.js
+const express = require('express');
+const todosModule = require('./todos/todosmodule');
+const usersModule = require('./users/usersmodule');
+
+const port = 3000;
+//Create Application Object
+const app = express();
+//Request will be passed to app
+//configure submodules with app
+app.use('/api/todos', todosModule);
+app.use('/api/users', usersModule);
+
+
+//start server 
+app.listen(port, function () {
+      console.log(`Express Server is Ready at ${port}`);
+});
 
 
 
