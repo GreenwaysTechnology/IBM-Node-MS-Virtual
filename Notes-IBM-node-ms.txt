@@ -3660,11 +3660,640 @@ broker.createService({
 //start process
 broker.start();
 broker.repl();
+...................................................................................
+Service Communication:
+
+Service is represented by Objects
+Service communication is nothing but Object Communication.
+
+Services are commmunicated via method calls with in application
+  -Local Service
+
+Services are commmunicated via method calls across the  application
+   -Remote Services
+  Remote services cant communicate directly.
+
+What is the solution?
+  Inter service communication patterns
+     "Service Registry and Discovery"
+
+Service Registry:
+  It is mini database holding service definitions
+  it is other wise called naming service.
+
+Why Registry?
+ In distributed arch, no services communicate each other directly whether is local or remote.
+ 
+Discovery : lookup 
+ In distributed arch, no services communicate each other directly whether is local or remote , but communicate with help of registry  this is called "service discovery" 
+
+Moleculer and service registery and discovery:
+
+1.The Moleculer framework has a built-in service discovery feature and you don’t need to use any central service discovery tool (like Zookeeper, Consul, etcd) because it is already integrated into the Moleculer protocol.
+
+2.This solution is a dynamic discovery. It means that the nodes don’t need to know all other nodes at starting. When a brand new node starts, it will send information of all local services to all other nodes so that every node can build an own local service registry. 
+
+
+Where is service registery in moleculary?
+
+ Every ServiceBroker has built in service registry.
+
+Local Services and how they can communicate each other?
+
+How to invoke services?
+
+ in repl:
+  call ServiceName.actionName
+
+ in side services (calling other service methods)
+  
+  Moleculare provides broker object's proxy 'Context'
+ Context is similar to broker object  , used to invoke methods on other service
+ context is available as arg inside action method
+ 
+ call returns promise=> then method after that get response.
+
+
+Local Services:
+const {
+      ServiceBroker
+} = require('moleculer');
+
+//Create Service Broker Object :Node(Process)
+const broker = new ServiceBroker();
+
+//create service on Broker
+broker.createService({
+      name: 'WelcomeService',
+      //biz logic
+      actions: {
+            //ms biz api
+            async welcome(ctx) {
+                  const result = await ctx.call('HelloService.hello')
+                  return result;
+            }
+      }
+})
+
+broker.createService({
+      name: 'HelloService',
+      //biz logic
+      actions: {
+            //ms biz api
+            hello() {
+                  return 'Hello Moleculer!';
+            }
+      }
+})
+//start process
+broker.start();
+broker.repl();
+
+............................................................................
+
+Use Case : Networking : Connecting Two Services Which are remote.
+
+
+Steps:
+
+1.Create Two ServiceBrokers
+2.Create Two Services with each ServiceBroker
+3.Open Two Command Prompt
+4.Start each Service
+5.Start Message Brokers -NATS / Reddis /Kafka
+
+
+Nats Implementation
+
+>npm install nats --save
+
+>nats server : download nats server :https://nats.io/download/
+
+
+calculator.service.js
+
+const {
+      ServiceBroker
+} = require('moleculer');
+
+//Create Service Broker Object :Node(Process)
+const broker = new ServiceBroker({
+      hotReload: true,
+      nodeID: 'IBM-Server-1',
+      transporter: "nats://localhost:4222"
+});
+
+//create service on Broker
+broker.createService({
+      name: 'CalculatorService',
+      //biz logic
+      actions: {
+            //ms biz api
+            //ms biz api
+            async add(ctx) {
+                  const result = await ctx.call('AdderService.add')
+                  return result;
+            }
+      }
+})
+//start process
+broker.start();
+broker.repl();
+
+
+adder.service.js
+
+const {
+      ServiceBroker
+} = require('moleculer');
+
+//Create Service Broker Object :Node(Process)
+const broker = new ServiceBroker({
+      hotReload: true,
+      nodeID: 'IBM-Server-2',
+      transporter: "nats://localhost:4222"
+});
+
+//create service on Broker
+broker.createService({
+      name: 'AdderService',
+      //biz logic
+      actions: {
+            //ms biz api
+            add() {
+                  return `${10 + 10} from ${broker.nodeID}`;
+            }
+      }
+})
+//start process
+broker.start();
+broker.repl();
+
+..................................................................................
+Transporter configuration:
+
+ transporter: "redis://localhost:6379"
+
+..................................................................................
+
+Load balancing:
+
+CalculatorService--Registery--LoadBalancer ---|-services
+
+1.Moleculer has several built-in load balancing strategies.
+
+Built-in strategies
+ ->RoundRobin strategy
+	This strategy selects a node based on round-robin algorithm.
+   Refer:https://en.wikipedia.org/wiki/Round-robin_DNS
+ ->Random strategy
+	This strategy selects a node randomly.
+ ->CPU usage-based strategy
+	This strategy selects a node which has the lowest CPU usage. Due to the node list can 	be very long, it gets samples and selects the node with the lowest CPU usage from only 	samples instead of the whole node list.
+
+ ->Latency-based strategy
+	This strategy selects a node which has the lowest latency, measured by periodic ping commands. Notice that the strategy only ping one of nodes from a single host.
+
+
+Use case : How to implement Load Balancer?
+ Molecular Provides build in load balancer
+
+Steps:
+
+1.Create CalculatorService with OneNode
+2.Create AdderService with 2 nodes
+3.Run all nodes and Query Data From CalculatorService  , test  which node is responding.
+
+..................................................................................
+
+Reslience:Fault tolerance
+
+What if 
+ ->server is down
+ ->service is not responding for long time
+ ->service is slow than expected time
+
+
+Implementations:
+
+1.fallback
+  "Fallback feature is useful, when you don’t want to give back errors to the users. Instead, call an other action or return some common content".
+
+Please note, 
+ "this fallback response will only be used if the error occurs within action handler".
+
+greeter.service.js
+
+actions: {
+            hello: {
+                 fallback: (ctx, err) => "Some cached result",
+                  async handler(ctx) {
+                        const result = await ctx.call('WelcomeService.sayWelcome');
+                        return 'Hello Moleculer!' + result;
+                  }
+            }
+      }
+
+Testing scenario : what if all nodes down.
 
 
 
+nodeOne.createService({
+      name: 'GreeterService',
+      actions: {
+            hello: {
+                  fallback: (ctx, err) => "Some cached result",
+                  async handler(ctx) {
+                        const result = await ctx.call('WelcomeService.sayWelcome');
+                        return 'Hello Moleculer!' + result;
+                  }
+            }
+      }
+
+})
+
+2.Retry Options:
+There is an exponential backoff retry solution. It can recall failed requests.
+
+   retryPolicy: {
+        enabled: true,
+        retries: 5,
+        delay: 100,
+        maxDelay: 2000,
+        factor: 2,
+        check: err => err && !!err.retryable
+    }
+
+enabled	Boolean	false	Enable feature.
+retries	Number	5	Count of retries.
+delay	Number	100	First delay in milliseconds.
+maxDelay	Number	2000	Maximum delay in milliseconds.
+factor	Number	2	Backoff factor for delay. 2 means exponential backoff.
+check	Function	err && !!err.retryable	A function to check failed requests
 
 
+Testing :
+
+1.Add Options at broker level / Service level
+
+const nodeOne = new ServiceBroker({
+      hotReload: true,
+      nodeID: 'IBM-Server-1',
+      //transporter: "nats://localhost:4222"
+      transporter: "redis://localhost:6379",
+      registry: {
+            strategy: "Random"
+      },
+      retryPolicy: {
+            enabled: true,
+            retries: 3,
+            delay: 1000,
+            maxDelay: 2000,
+            factor: 2,
+            check: err => "Unable to Reach Service"
+      }
+});
+
+3.Circuit Breaker :
+
+The Circuit Breaker can prevent an application from repeatedly trying to execute an operation that’s likely to fail. Allowing it to continue without waiting for the fault to be fixed or wasting CPU cycles while it determines that the fault is long lasting. The Circuit Breaker pattern also enables an application to detect whether the fault has been resolved. If the problem appears to have been fixed, the application can try to invoke the operation.
+
+
+const nodeOne = new ServiceBroker({
+      hotReload: true,
+      nodeID: 'IBM-Server-1',
+      //transporter: "nats://localhost:4222"
+      transporter: "redis://localhost:6379",
+      registry: {
+            strategy: "Random"
+      },
+      // retryPolicy: {
+      //       enabled: true,
+      //       retries: 3,
+      //       delay: 1000,
+      //       maxDelay: 2000,
+      //       factor: 2,
+      //       check: err => "err && !!err.retryable"
+      // }
+      circuitBreaker: {
+            enabled: true,
+            threshold: 0.5,
+            check: err => {
+                  console.log('Circuit Breaker is enabled err.code);
+                  return err && err.code >= 500
+            }
+
+      }
+});
+2.bulkhead options
+..................
+ "Bulkhead feature is implemented in Moleculer framework to control the concurrent request handling of actions".
+
+Broker level:
+const broker = new ServiceBroker({
+    bulkhead: {
+        enabled: true,
+        concurrency: 3,
+        maxQueueSize: 10,
+    }
+});
+
+The concurrency value restricts the concurrent request executions.
+
+If the maxQueueSize is bigger than 0, broker stores the additional requests in a queue if all slots are taken. 
+
+If the queue size reaches the maxQueueSize limit or it is 0, broker will throw QueueIsFull exception for every addition requests.
+
+........................................................................................
+Distributed Timeouts:
+....................
+Timeout can be set for service calling. It can be set globally in broker options, or in calling options.
+If timeout is defined and request is timed out, broker will throw a RequestTimeoutError error.
+...................................................................................
+
+Moleculer Runner : Building Realtime Projects so easy.
+
+What is the problem with previous approach?
+
+Points: 
+
+1.A ServiceBroker can have many Services,each Broker represents a node instance.
+  If i want to run multiple nodes, i need to run separate process: which does not scale in   production.
+2.An Application(as part of Big Application), you cant have many service broker in single code base : which is not ms architecture.
+   Create each application in a separte Service Broker, which is really difficult.
+   Running multiple nodes on each application which is even difficult.
+
+Solution: Moleculer Runner 
+
+  With it you don’t need to create a ServiceBroker instance with options, but a moleculer.config.js or moleculer.config.json file in the root of repo.
+
+Use case : Create Multi Projects,run separately, communicate via Transporters
+
+Here i am going to create two projects
+->cart
+->billing
+
+Steps:
+1.cart project
+
+>mkdir ecommerce
+
+>cd ecommerce
+
+ecommerce>mkdir cart
+
+ecommerce>cd cart
+
+ecommerce/cart> npm init
+
+package.json dependencies
+"dependencies": {
+    "ioredis": "^4.14.1",
+    "moleculer": "^0.13.11",
+    "moleculer-repl": "^0.6.1",
+    "moleculer-zipkin": "^0.2.2",
+    "nats": "^1.3.2",
+    "redlock": "^4.0.0"
+  },
+>npm install
+
+ecommerce/cart>mkdir services
+
+Create broker config file  : name can be any thing but follow default convention
+
+ecommerce/cart> moleculer.dev.config.js
+
+broker basic options : you can add all config what ever you have learned in previous 
+tutorial
+
+moleculer.dev.config.js
+
+module.exports = {
+      nodeID: "ibm-cart-server",
+      logger: true,
+      logLevel: "info",
+      transporter: "redis://localhost:6379",
+      requestTimeout: 5 * 1000,
+
+      circuitBreaker: {
+            enabled: true
+      },
+
+      metrics: true
+}
+
+
+configure moleculer-runner in scripts sections.
+"scripts": {
+    "dev": "moleculer-runner --repl --hot --config moleculer.dev.config.js --instances=2  services"
+  }
+
+start in repl mode
+make hot reloading
+load broker config file 
+start 2 nodes (--instances)
+point to services folder : to scan all files ends with "filename.service.js"
+
+
+>create service file and add actions : try to connect with billingservice which separate project
+
+cart.service.js
+
+"use strict"
+
+module.exports = {
+      name: 'cartservice',
+      actions: {
+            async checkout(ctx) {
+                  const billingInfo = await ctx.call('billingservice.process');
+                  return billingInfo;
+            }
+      }
+}
+
+.................................XXXXXXXXXXXXXXXXXXXXXXX...................................
+
+1.billing project
+
+
+>cd ecommerce
+
+ecommerce>mkdir billing
+
+ecommerce>cd billing
+
+ecommerce/billing> npm init
+
+package.json dependencies
+"dependencies": {
+    "ioredis": "^4.14.1",
+    "moleculer": "^0.13.11",
+    "moleculer-repl": "^0.6.1",
+    "moleculer-zipkin": "^0.2.2",
+    "nats": "^1.3.2",
+    "redlock": "^4.0.0"
+  },
+>npm install
+
+ecommerce/billing>mkdir services
+
+Create broker config file  : name can be any thing but follow default convention
+
+ecommerce/billing> moleculer.dev.config.js
+
+broker basic options : you can add all config what ever you have learned in previous 
+tutorial
+
+moleculer.dev.config.js
+
+"use strict"
+module.exports = {
+      nodeID: "ibm-billing-server",
+      logger: true,
+      logLevel: "info",
+      transporter: "redis://localhost:6379",
+      requestTimeout: 5 * 1000,
+
+      circuitBreaker: {
+            enabled: true
+      },
+
+      metrics: true
+}
+
+
+configure moleculer-runner in scripts sections.
+"scripts": {
+    "dev": "moleculer-runner --repl --hot --config moleculer.dev.config.js --instances=5  services"
+  }
+
+start in repl mode
+make hot reloading
+load broker config file 
+start 2 nodes (--instances)
+point to services folder : to scan all files ends with "filename.service.js"
+
+
+>create service file and add actions : try to connect with billingservice which separate project
+
+billing.service.js
+"use strict"
+
+module.exports = {
+      name: 'billingservice',
+      actions: {
+            async process(ctx) {
+                  return {
+                        billno: 'A0001X98',
+                        product: 'Lenvo Think Pad P2 Mobile Edition',
+                        qty: 1,
+                        price: 2000,
+                        message: this.broker.nodeID
+                  }
+            }
+      }
+}
+
+Note: both projects should be executed in a separate command Prompt
+
+
+.................................XXXXXXXXXXXXXXXXXXXXXXX...................................
+
+As of now , we have seen how to create brokers,services
+and we have tested on console.
+
+What if i want to expose as rest end point.
+
+API GateWay:
+
+Molecular provides apigate as service. you can create api gateway separate app.
+
+Steps
+
+create new Project called "apiGateWay"
+
+
+>cd ecommerce
+
+ecommerce>mkdir apiGateWay
+
+ecommerce/apiGateWay>npm init
+
+basic package.json dependencies: copy from previous projects
+
+ "dependencies": {
+    "ioredis": "^4.14.1",
+    "moleculer": "^0.13.11",
+    "moleculer-repl": "^0.6.1",
+    "moleculer-zipkin": "^0.2.2",
+    "nats": "^1.3.2",
+    "redlock": "^4.0.0"
+  }
+
+The moleculer-web is the official API gateway service for Moleculer framework. 
+ "Use it to publish your services as RESTful APIs"
+
+>npm install moleculer-web 
+
+ "dependencies": {
+    "ioredis": "^4.14.1",
+    "moleculer": "^0.13.11",
+    "moleculer-repl": "^0.6.1",
+    "moleculer-web": "^0.8.5",
+    "moleculer-zipkin": "^0.2.2",
+    "nats": "^1.3.2",
+    "redlock": "^4.0.0"
+  }
+
+
+broker config file
+
+moleculer.config.js
+
+"use strict"
+
+module.exports = {
+      nodeID: "ibm-gateway-server",
+      logger: true,
+      logLevel: "info",
+      transporter: "redis://localhost:6379",
+      requestTimeout: 5 * 1000,
+
+      circuitBreaker: {
+            enabled: true
+      },
+
+      metrics: true
+}
+
+Service config file:
+
+api.gateway.service.js
+
+"use strict"
+const ApiGwService = require("moleculer-web");
+
+module.exports = {
+      name: 'api',
+      mixins: [ApiGwService],
+      settings: {
+            // Change port setting
+            port: process.env.port || 3000,
+            routes: [{
+                  path: "/api",
+                  whitelist: [
+                        // Access to any actions in all services under "/api" URL
+                        "**"
+                  ],
+                  aliases: {
+                        "GET cart/checkout": "cartservice.checkout"
+                  },
+                  // Disable direct URLs (`/posts/list` or `/posts.list`)
+                  mappingPolicy: "restrict"
+            }]
+      }
+
+}
 
 
 

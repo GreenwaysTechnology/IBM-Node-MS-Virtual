@@ -5,8 +5,10 @@ const {
 //Create Service Broker Object :Node(Process)
 const broker = new ServiceBroker({
       hotReload: true,
-      nodeID: 'IBM-Server-2',
-      transporter: "nats://localhost:4222"
+      transporter: "nats://localhost:4222",
+      registry: {
+            strategy: 'random'
+      }
 });
 
 //create service on Broker
