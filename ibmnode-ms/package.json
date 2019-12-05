@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "moleculer": "^0.13.11"
+    "moleculer": "^0.13.11",
+    "nats": "^1.3.2"
   },
   "devDependencies": {
     "moleculer-repl": "^0.6.1"

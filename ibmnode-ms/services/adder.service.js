@@ -3,16 +3,20 @@ const {
 } = require('moleculer');
 
 //Create Service Broker Object :Node(Process)
-const broker = new ServiceBroker();
+const broker = new ServiceBroker({
+      hotReload: true,
+      nodeID: 'IBM-Server-2',
+      transporter: "nats://localhost:4222"
+});
 
 //create service on Broker
 broker.createService({
-      name: 'HelloService',
+      name: 'AdderService',
       //biz logic
       actions: {
             //ms biz api
-            hello() {
-                  return 'Hello Moleculer!';
+            add() {
+                  return `${10 + 10} from ${broker.nodeID}`;
             }
       }
 })
