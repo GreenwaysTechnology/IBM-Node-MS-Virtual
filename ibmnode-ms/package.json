@@ -1,5 +1,5 @@
 {
-  "name": "myexpress-app",
+  "name": "ibmnode-ms",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "moleculer": "^0.13.11"
+  },
+  "devDependencies": {
+    "moleculer-repl": "^0.6.1"
   }
 }

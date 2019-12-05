@@ -2996,6 +2996,674 @@ app.listen(port, function () {
 });
 
 
+///////////////////////////////////////////////////////////////////////////////
+sending data to Express app!
+............................
+
+todosModule.post('/', function (req, res) {
+
+      let todo = ''
+      req.on('data', function (chunk) {
+            todo += chunk;
+      });
+      req.on('end', function (chunk) {
+            res.json({
+                  message: todo
+            })
+      });
+
+
+});
+
+In express , you need not attach events to read data.
+
+req.body
+
+
+Express app architecture:
+
+express has two things
+1.URL mapping and request processing : app.get('url')
+2.Routers , to create moduels
+
+middlewares:
+...........
+
+what is middleware?
+
+ it is utility can be plugged in express application.
+
+Express provides only
+1.request and response processing.
+2.Routers :in to modules.
+
+Rest of application features
+
+1.loggers
+2.security
+3.database connectivity
+3.data formating
+4.view engine integration
+ middlewares
+
+Types of middlewares
+1.custom middlewares
+2.third party middlewares
+
+
+middleware workflows:
+
+client----request---node--server---express application---
+
+			   | ---m1
+			   | --m2
+	express application| ---m3   ----Request Processing(get,post...)
+			   |---m4
+			   | --mn
+
+
+How to attach middleware with application object?
+
+app.use(middleware) : middleware registeration at app level : global middlewares
+router.use(middleware) : middleware registeration at module level
+
+
+
+Types of middlewares based on Use:
+.................................
+Application-level middleware
+  middleware attached at application : global middlewares
+Router-level middleware
+ middleware attached at router level(module) : module specific
+Error-handling middleware
+ for handling global errors
+Built-in middleware
+ provided by express itself
+Third-party middleware
+ provided by others.
+
+Built-in middleware
+ provided by express itself
+
+1.body-parser :
+  which parses client input data into javascript object
+
+
+>npm install body-parser --save
+
+How to attach body-parser middleware at application object level?
+
+const bodyParser = require('body-parser');
+
+
+
+////////////////////////////////////////////////////////////////////////////
+//Global/application  Middleware configuration
+
+// parse application/json
+app.use(bodyParser.json())
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+      extended: false
+}))
+
+
+////////////////////////////////////////////////////////////////////////////
+
+const express = require('express');
+const todosModule = require('./todos/todosmodule');
+const usersModule = require('./users/usersmodule');
+const bodyParser = require('body-parser');
+
+const port = 3000;
+//Create Application Object
+const app = express();
+
+// parse application/json
+app.use(bodyParser.json())
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+      extended: false
+}))
+
+
+//Request will be passed to app
+//configure submodules with app
+app.use('/api/todos', todosModule);
+app.use('/api/users', usersModule);
+
+
+//start server 
+app.listen(port, function () {
+      console.log(`Express Server is Ready at ${port}`);
+});
+
+app.on('request', function (req, res) {
+      console.log(`Server is listening ${req.url}`)
+});
+
+//build todos rest end points
+const express = require('express');
+const TODOS = require('../mock-data/todos');
+
+//create router : submodule
+const todosModule = express.Router();
+
+//REST End Points :TODOS
+//http://localhost:3000/api/todos/list
+todosModule.get('/list', function (req, res) {
+      res.json(TODOS);
+})
+
+//http://localhost:3000/api/todos/:id
+//http://localhost:3000/api/todos/2
+todosModule.get('/:id', function (req, res) {
+      //read Request parameter
+      const id = parseInt(req.params.id)
+      const filteredTo = TODOS.filter(todo => {
+            return todo.id === id;
+      });
+      res.json(filteredTo);
+})
+todosModule.post('/', function (req, res) {
+      let todo = req.body;
+      console.log(todo);
+      res.json(TODOS.concat(todo));
+});
+
+
+module.exports = todosModule;
+
+
+How to write custom middlewares?
+
+1.It is function only , express request processing function
+
+middleware can be written for any url pattern and any http method in the application.
+
+general middleware syntax;
+
+ app.use(function(req,res,next){});
+
+
+middleware chian :
+
+  m1--next-->m2--next--m3-next--mn---next---requestProcessing
+
+..................................................................................
+
+//build todos rest end points
+const express = require('express');
+const TODOS = require('../mock-data/todos');
+
+//create router : submodule
+const todosModule = express.Router();
+
+//middleware is called for any url,any method in the TODOS Module
+todosModule.use(function (req, req, next) {
+      console.info('TODOS API started')
+      next();
+})
+todosModule.use('/list', function (req, res, next) {
+      console.info(`TODOS  API : ${req.method} `)
+      next();
+})
+
+//REST End Points :TODOS
+//http://localhost:3000/api/todos/list
+todosModule.get('/list', function (req, res) {
+      res.json(TODOS);
+})
+
+//http://localhost:3000/api/todos/:id
+//http://localhost:3000/api/todos/2
+todosModule.get('/:id', function (req, res) {
+      //read Request parameter
+      const id = parseInt(req.params.id)
+      const filteredTo = TODOS.filter(todo => {
+            return todo.id === id;
+      });
+      res.json(filteredTo);
+})
+todosModule.post('/', function (req, res) {
+      let todo = req.body;
+      console.log(todo);
+      res.json(TODOS.concat(todo));
+});
+
+
+module.exports = todosModule;
+..................................................................................
+
+
+const express = require('express');
+const todosModule = require('./todos/todosmodule');
+const usersModule = require('./users/usersmodule');
+const bodyParser = require('body-parser');
+
+const port = 3000;
+//Create Application Object
+const app = express();
+
+//middleware : custom
+//middleware syntax similar to request handler but it takes extra parameter
+// next
+//global middlewares , middle for any url,any method
+app.use(function (req, res, next) {
+      //middleware logic
+      console.info('IBM digital api platform started...');
+      next();
+});
+
+app.use(function (req, res, next) {
+      //middleware logic
+      console.info('This Platform is used to automate digital apis...');
+      next();
+});
+// parse application/json
+app.use(bodyParser.json())
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+      extended: false
+}))
+
+
+//Request will be passed to app
+//configure submodules with app
+app.use('/api/todos', todosModule);
+app.use('/api/users', usersModule);
+
+
+//home page
+app.get('/', function (req, res) {
+      res.end('<h1>IBM digitial api platform </h1>');
+});
+
+
+//start server 
+app.listen(port, function () {
+      console.log(`Express Server is Ready at ${port}`);
+});
+
+app.on('request', function (req, res) {
+      console.log(`Server is listening ${req.url}`)
+});
+
+..................................................................................
+
+Express middlewares  are project or lib specific.
+
+Eg:
+if i want to connect mongodb as back end.
+
+i need middleware.
+
+ Express --->mongooseMiddleware---->Mongodb
+
+Loggers
+Auth : oauth 
+sql -oracle,mssql 
+...............................................................................
+
+
+Microservices on Node.js:
+........................
+
+What is Microservices?
+
+Microservice is  yet another Architecture for building distributed Applications.
+
+
+Distributed Computing : Overview
+
+Any architecture:
+1.Data
+2.How to process data - biz logic
+3.How to view data / How to send data  - Presentation
+
+1.Main frame based architecture
+
+Main frame acts as central machine which stores and process the data.
+
+Dump teriminals are connected with Mainframes : client
+
+Advantages:
+1.Centeralized management
+2.High secure system.
+
+Drabacks:
+1.High Cost
+2.Scallablity is difficult
+3.Perfomance may be bad when more requests comes
+
+
+Client -Server Architectures:
+
+1-tier client-server
+ ->Server is Personal Computers ,having data and biz logic + Presentation : Local networks
+
+2-tier client-server
+
+ ->Server is Personal Computers ,having data and biz logic + Presentation : wide    area,MAN,internet networks
+
+ ->Client  is Personal computer having presentation logic ,where server has data + biz logic
+
+3-tier client-server
+   data is one server ->Db server
+   biz logic is kept is one server ->App server
+   client is kept is separte  machine -  Client
+ 
+N-tier Client-Server
+
+   Client -----Web Server ----- AppServer(biz logic) ----Messaging Servers---Database Servers---Mail Servers --Directory Servers
+ 
+ works on internet infrastructure.
+
+
+Pros and cons of N-tier client-server architecture
+
+Props:
+1. separation of application across multiple machines: loosly coupled system.
+
+Cons:
+
+1.Vendor lock in 
+ if you select application on java... every thing should be towards java
+
+ Monolothic Application: one application,one tech stack
+  Single tech stack.
+ Polyglot : database,language is not possible.
+
+................................................................................
+
+Software deliver model
+
+Legacy model:
+
+Java :
+
+Dev
+    Build application
+
+ pack the application as unit "jar /war /ear"
+
+Testing
+  move applicaiton on testing env
+Test the applications.
+  if success
+	move the application into production
+
+Production
+  War----Deploy on Machines
+Deployment problems  
+ -os com
+ -server com issues
+ -dependencies issues
+
+Live: => Maintaince
+..............................................................................
+
+Agile:
+
+Microservices is distributed application dev,testing,deploying application based on agile process.
+
+Dev ops : Software process which enables application dev,test,dep in automation
+ which says one slogan called "C" "Continues"
+
+
+     (BDD)
+Continues Requirement--->Continous Dev---Continuous Testing-- Continuous--Deployment--Live
+
+Tools:
+ Dev ops
+   -CI /CD /CT - integration of all work flows
+	dev ----SCM(git/svn)-----jenkins----testing pipelines---Deployments(containers -dockers).
+
+ req-Dev--Test--Delivery--Live
+................................................................................
+
+Microservice is all about collection of Patterns
+
+1.Dev Patterns
+2.Testing Patterns
+3.Deployment Patterns
+
+...............................................................................
+
+What is Service?
+  
+ Service is a single Program like class OrderService
+ Service is a single module in the application "OrderModule"
+
+
+Microservice Principls
+
+1.Domain driven Design
+  Application must be broken into smaller units called modules
+eg: ECOMMERCE
+
+                ECommerce Manager
+		    |	
+		  Devops
+		  Testing
+		  Dev
+
+-Order - orderTeam
+  Dev,Test,Dev ops
+ Every team must have their own mangers,leads,dev,arch,operatios(dev ops enginer)
+
+-Customer -Customer Team
+  Dev,Test,Dev ops
+ Every team must have their own mangers,leads,dev,arch,operatios(dev ops enginer)
+
+-Inventory -Inventory
+  Dev,Test,Dev ops
+ Every team must have their own mangers,leads,dev,arch,operatios(dev ops enginer)
+
+
+2.Resilience : Falut Tolerance
+
+eg :
+  order application has gone for live , which are running on 3 servers
+  if one server goes down, we have to instantlly up new server for failed ones.
+
+ 
+3.Observerablity: Monitoring
+  
+ How many services are up and runnign
+ How many services failed
+ How to log each services activties
+ How to enable disbuted transactions
+ How to watch live traffic. 
+ 
+
+
+4.Automation : Devops enginering
+
+  Req--BDD
+  CI /CD integration
+  automation in testing
+  using modern devops tools
+
+.............................................................................
+
+How to implement Microservices
+
+Microservice is just architecture.
+
+Microservices is poly glot : language/database/tech independent.
+
+
+
+How to implement microservices:
+
+1.ON JVM , we have so many ms implementations
+
+ Spring framework
+  ->Spring-Cloud : framework for building ms distributed application.
+ 
+ Ecplise Vertx framework
+   - written jvm
+
+
+2.ON Node, we have so many ms implementations
+ 
+  Moleculer js : MS implementation on node js
+
+..................................................................................
+
+Project setup:
+
+We can do in two ways
+
+1.create folders add moleculer dependencies
+2.You can use moleculer-cli tool 
+
+
+1.create folders add moleculer dependencies
+
+>mkdir ibmnode-ms
+>cd ibmnode-ms
+>npm init
+>npm i  moleculer --save
+
+What is moleculer?
+
+ moleculer is a framework, built on top express.js , coimbing many middlewares.
+
+
+Why moleculer / Moleculer features:
+
+
+1.Promise-based solution (async/await compatible)
+
+2.request-reply concept
+
+3.support streams
+
+4.support event-driven architecture with load balancing
+
+5.built-in service registry & dynamic service discovery
+
+6.load balanced requests & events (round-robin, random, cpu-usage, latency)
+
+
+7.many fault tolerance features (Circuit Breaker, Bulkhead, Retry, Timeout, Fallback)
+
+8.supports middlewares
+
+9.supports versioned services
+
+10.service mixins
+
+11.built-in caching solution (memory, Redis)
+
+12.pluggable transporters (TCP, NATS, MQTT, Redis, NATS Streaming, Kafka)
+
+
+13.pluggable serializers (JSON, Avro, MsgPack, Protocol Buffers, Thrift)
+
+
+14.pluggable validator
+
+15.multiple services on a node/server
+
+16.all nodes are equal, no master/leader node
+
+17.parameter validation with fastest-validator
+
+18.built-in health monitoring & metrics
+
+19.official API gateway module and many other modules…
+
+...............................................................................
+
+Moleculer Componets(Objects):
+
+Service Implementation:
+ Service is Object which expose your biz functionality.
+
+Components of moleculer:
+
+1.ServiceBroker === node process : instance of node runtime.
+	It is heart of Moleculer framework
+  Which represents an Node /Process
+ ServiceBroker contains list of services
+
+2.Service
+  Serivice represents object which exposes biz functionality.
+
+Steps For creating single Node and service:
+
+1.create ServiceBroker Object.
+2.Create Service
+3.Start ServiceBroker
+4.You can invoke Service.
+
+
+1.create ServiceBroker Object.
+
+const broker = new ServiceBroker();
+
+2.Create Service
+broker.createService({configuration})
+
+ configuration is literal object , which is called service configuration.
+
+//create service on Broker
+broker.createService({
+      name: 'GreeterService',
+      //biz logic
+      actions: {
+            //ms biz api
+            hello() {
+                  return 'Hello Moleculer!';
+            }
+      }
+})
+
+3.Start ServiceBroker  
+
+  broker.start()
+
+Note: you need to install
+
+ >npm install moleculer-repl
+
+
+>invoke Service
+In Repl terminal
+$call GreeterService.hello
+
+
+const {
+      ServiceBroker
+} = require('moleculer');
+
+//Create Service Broker Object :Node(Process)
+const broker = new ServiceBroker();
+
+//create service on Broker
+broker.createService({
+      name: 'GreeterService',
+      //biz logic
+      actions: {
+            //ms biz api
+            hello() {
+                  return 'Hello Moleculer!';
+            }
+      }
+})
+//start process
+broker.start();
+broker.repl();
+
+
+
+
 
 
 
